@@ -7,7 +7,8 @@
     <li>
         <h4>Useful gists for project</h4>
         <ul>
-            <li><a href="https://gist.github.com/Vladikasik/8bf4ed703598da777e0477c353b75c0f">button lambda for switching pages</a></li>
+            <li><a href="https://gist.github.com/Vladikasik/8bf4ed703598da777e0477c353b75c0f">Button lambda for switching pages</a></li>
+            <li><a href="https://gist.github.com/6d114fa2e24c0944fbbf03ef511cbcaf">Button with custom shape and hover change</a></li>
         </ul>
     </li>
 </ul>
