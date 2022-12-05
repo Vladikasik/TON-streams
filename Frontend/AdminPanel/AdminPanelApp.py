@@ -76,11 +76,9 @@ class LoginPage(tk.Frame):
         login_looplex = tk.Label(self, image=img_looplex)
         login_looplex.grid(row=4, column=3, columnspan=2)
         login_looplex.image = img_looplex
-        login_looplex.bind('<Enter>', func=lambda e: change_background(e, login_looplex, img_looplex_hover))
-        login_looplex.bind('<Leave>', func=lambda e: change_background(e, login_looplex, img_looplex))
+        login_looplex.bind('<Enter>', func=lambda e: login_looplex.configure(image=img_looplex_hover))
+        login_looplex.bind('<Leave>', func=lambda e: login_looplex.configure(image=img_looplex))
 
-        def change_background(event, label_obj, img_obj):
-            label_obj.configure(image=img_obj)
 
 # Driver Code
 app = MainController()
