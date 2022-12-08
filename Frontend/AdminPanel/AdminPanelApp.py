@@ -1,8 +1,11 @@
 import threading
 import tkinter as tk
 from tkinter import ttk
-from PIL import Image, ImageTk
+from PIL import ImageTk
 import time
+import socket
+from queue import Queue
+import multiprocessing
 
 
 class MainController(tk.Tk):
@@ -119,23 +122,66 @@ class LoginPage(tk.Frame):
         approx_time_text.configure(anchor="center")
         approx_time_text.grid(row=2, column=0, columnspan=3, sticky="nsew")
 
-        def play_animation(label_animation, frames):
-            while 1:
+        def play_animation(label_animation, frames, time_to_stop):
+            while not time_to_stop.is_set():
                 for frame in frames:
                     label_animation.configure(image=frame)
                     label_animation.update_idletasks()
                     time.sleep(0.1)
-
+            print('time_to_stop event is set')
+            return 1
         frames_list = []
         for frame_num in range(12):
             img = tk.PhotoImage(file=f'images/loading.gif', format=f"gif -index {frame_num}",
                                 master=root_wait)
             frames_list.append(img)
+            print(img)
 
-        thread = threading.Thread(target=play_animation, args=(loading_gif_label, frames_list))
-        thread.start()
+        def stop_animation(main_label, image_label, approx_label):
+            main_label.grid_remove()
+            image_label.grid_remove()
+            approx_label.grid_remove()
+            done_label = ttk.Label(root_wait, text='Done', justify='center', font=('Inter', 36), anchor='center')
+            done_label.grid(row=1, column=0, columnspan=3, sticky='nsew')
+            root_wait.update_idletasks()
+            time.sleep(2)
+            root_wait.destroy()
 
+        # starting animation
+        stopping_event = threading.Event()
+        animation_thread = threading.Thread(target=play_animation, args=(loading_gif_label, frames_list, stopping_event))
+        animation_thread.start()
+        print('animation started')
+
+        def wallet_receiver(q):
+            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            sock.bind(('127.0.0.1', 17001))
+            while 1:
+                wallet_received, _ = sock.recvfrom(2048)
+                q.put(wallet_received.decode('utf-8'))
+                break
+            return 1
+
+        queue_for_wallet = Queue()
+        socket_thread = threading.Thread(target=wallet_receiver, args=(queue_for_wallet,))
+        socket_thread.start()
+
+        print('socket_scanning started')
+
+        def check_thread(thread):
+            if thread.is_alive():
+                # not ready yet, run the check again soon
+                root_wait.after(100, check_thread, thread)
+            else:
+                if "(wallet_receiver)" in thread.name:
+                    stopping_event.set()
+                elif "(play_animation)" in thread.name:
+                    stop_animation(waiting_text, loading_gif_label, approx_time_text)
+
+        root_wait.after(100, check_thread, socket_thread)
+        root_wait.after(100, check_thread, animation_thread)
         root_wait.mainloop()
+        #TODO switch to main page
 
 
 # Driver Code
