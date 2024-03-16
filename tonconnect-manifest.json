@@ -1,0 +1,5 @@
+{
+    "url": "ton-streams.io",                        // required
+    "name": "TON sreams",                      // required
+    "iconUrl": "<app-icon-url>"// optional
+  }
