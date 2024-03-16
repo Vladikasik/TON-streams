@@ -1,5 +1,5 @@
 {
     "url": "ton-streams.io",                        // required
     "name": "TON sreams",                      // required
-    "iconUrl": "<app-icon-url>"// optional
+    "iconUrl": "https://github.com/Vladikasik/TON-streams/blob/js-way/capybara-gold-coin-8-bit.png?raw=true"// optional
   }
